@@ -232,8 +232,9 @@ unsigned long co2ModeStartTime = 0;
 bool co2PinModeActive = false;
 
 // Track the countdown time
-unsigned long co2DelayEndTime = 0; // When the delay will end (in millis)
-bool co2DelayActive = false;       // Is a delay currently active?
+unsigned long co2DelayStartTime = 0; // When the delay started (in millis)
+unsigned long co2DelayDurationMs = 0; // Total duration of the active delay (in millis)
+bool co2DelayActive = false;          // Is a delay currently active?
 
 // For storing interval components used in Data Logging.
 uint32_t logInterval[4];  // [days, hours, minutes, seconds]
@@ -484,10 +485,10 @@ void setup() {
         EEPROM.write(TEMP_F_H_MIN_ADDR, 70);  // Heating min 70°F
         
         // Calculate and save Celsius equivalents
-        EEPROM.write(TEMP_C_MAX_ADDR, round(fahrenheitToCelsius(90)));
-        EEPROM.write(TEMP_C_MIN_ADDR, round(fahrenheitToCelsius(85)));
-        EEPROM.write(TEMP_H_MAX_ADDR, round(fahrenheitToCelsius(75)));
-        EEPROM.write(TEMP_H_MIN_ADDR, round(fahrenheitToCelsius(70)));
+        EEPROM.write(TEMP_C_MAX_ADDR, (uint8_t)constrain((int)round(fahrenheitToCelsius(90)), 0, 99));
+        EEPROM.write(TEMP_C_MIN_ADDR, (uint8_t)constrain((int)round(fahrenheitToCelsius(85)), 0, 99));
+        EEPROM.write(TEMP_H_MAX_ADDR, (uint8_t)constrain((int)round(fahrenheitToCelsius(75)), 0, 99));
+        EEPROM.write(TEMP_H_MIN_ADDR, (uint8_t)constrain((int)round(fahrenheitToCelsius(70)), 0, 99));
         
         // Load temperature values into memory
         tempValuesF[0] = 90;
@@ -684,7 +685,8 @@ void setup() {
         if(delayDurationMs > 0) {
             co2DelayActive = true;
             co2PinModeActive = true;
-            co2DelayEndTime = millis() + delayDurationMs;
+            co2DelayStartTime = millis();
+            co2DelayDurationMs = delayDurationMs;
             Serial.println("CO2 Pin mode activated with delay from settings");
         }
     }
@@ -776,7 +778,7 @@ void logDataToSD() {
     sdCardPresent = sd.begin(SD_CS_PIN);
     if (!sdCardPresent) {
       isLogging = false;
-      EEPROM.write(LOG_STATUS_ADDR, 0);
+      EEPROM.update(LOG_STATUS_ADDR, 0);
       Serial.println("Logging stopped - SD card not found");
       return;
     }
@@ -905,12 +907,10 @@ void logDataToSD() {
       
       // CO2 Delay
       if(co2DelayActive) {
-        // Calculate remaining time
-        unsigned long remainingMillis = 0;
-        if(co2DelayEndTime > millis()) {
-          remainingMillis = co2DelayEndTime - millis();
-        }
-        
+        // Calculate remaining time (wrap-safe subtraction)
+        unsigned long elapsed = millis() - co2DelayStartTime;
+        unsigned long remainingMillis = (elapsed >= co2DelayDurationMs) ? 0 : (co2DelayDurationMs - elapsed);
+
         // Convert remaining time to days, hours, minutes, seconds
         uint32_t remainingDays = remainingMillis / (24L * 60L * 60L * 1000L);
         remainingMillis %= (24L * 60L * 60L * 1000L);
@@ -963,7 +963,7 @@ void logDataToSD() {
       
       // CRITICAL: Write logging status to EEPROM after successful logging
       // This ensures the status remains ON even after power loss
-      EEPROM.write(LOG_STATUS_ADDR, 1);
+      EEPROM.update(LOG_STATUS_ADDR, 1);
       
       // Update timekeeping for next log
       lastLogTime = millis();
@@ -993,7 +993,7 @@ void logDataToSD() {
       if(!sdCardPresent) {
         // SD card was removed
         isLogging = false;
-        EEPROM.write(LOG_STATUS_ADDR, 0);
+        EEPROM.update(LOG_STATUS_ADDR, 0);
         Serial.println("Data Logging disabled - SD Card removed");
       } else {
         // SD card is present but file couldn't be opened, try again shortly
@@ -1086,12 +1086,13 @@ void updateRelays() {
                 // If delay is > 0, activate countdown
                 if(delayTimeMs > 0) {
                     co2DelayActive = true;
-                    co2DelayEndTime = millis() + delayTimeMs;
+                    co2DelayStartTime = millis();
+                    co2DelayDurationMs = delayTimeMs;
                     Serial.println("CO2 Pin mode activated - starting delay timer");
                 }
             } else if(co2DelayActive) {
-                // Check if countdown has finished
-                if(millis() >= co2DelayEndTime) {
+                // Check if countdown has finished (wrap-safe subtraction)
+                if(millis() - co2DelayStartTime >= co2DelayDurationMs) {
                     // Time to switch back to Fruit mode
                     co2Mode = true;
                     co2PinModeActive = false;
@@ -1147,6 +1148,14 @@ void readSensors() {
       currentCO2         += calCO2Offset;
       currentTemperature += calTempOffset;
       currentHumidity    += calHumOffset;
+
+      // Clamp to plausible ranges
+      if (currentCO2 < 0) currentCO2 = 0;
+      if (currentCO2 > 9999) currentCO2 = 9999;
+      if (currentTemperature < -40.0f) currentTemperature = -40.0f;
+      if (currentTemperature > 85.0f) currentTemperature = 85.0f;
+      if (currentHumidity < 0.0f) currentHumidity = 0.0f;
+      if (currentHumidity > 100.0f) currentHumidity = 100.0f;
 
       Serial.print("SCD41: ");
       Serial.print("CO2="); Serial.print((uint16_t)currentCO2);
@@ -1500,7 +1509,7 @@ void updateDisplay() {
                         // Also make sure logging is turned off
                         if(isLogging) {
                             isLogging = false;
-                            EEPROM.write(LOG_STATUS_ADDR, 0);
+                            EEPROM.update(LOG_STATUS_ADDR, 0);
                         }
                     } else {
                         // Normal display when SD card is present
@@ -1589,11 +1598,9 @@ void updateDisplay() {
                     } else if(co2DelayActive && !co2Mode) {
                         // Show countdown timer when active and in Pin mode
                         
-                        // Calculate remaining time
-                        unsigned long remainingMillis = 0;
-                        if(co2DelayEndTime > millis()) {
-                            remainingMillis = co2DelayEndTime - millis();
-                        }
+                        // Calculate remaining time (wrap-safe subtraction)
+                        unsigned long elapsed = millis() - co2DelayStartTime;
+                        unsigned long remainingMillis = (elapsed >= co2DelayDurationMs) ? 0 : (co2DelayDurationMs - elapsed);
                         
                         // Convert remaining time to days, hours, minutes, seconds
                         uint32_t remainingDays = remainingMillis / (24L * 60L * 60L * 1000L);
@@ -1807,7 +1814,7 @@ void handleInput() {
                     Serial.print(logInterval[3]); Serial.println("s");
                 }
                 else if(subMenu == 1) { // Logging enabled/disabled
-                    EEPROM.write(LOG_STATUS_ADDR, isLogging ? 1 : 0);
+                    EEPROM.update(LOG_STATUS_ADDR, isLogging ? 1 : 0);
                     Serial.print("Saved logging status: ");
                     Serial.println(isLogging ? "Enabled" : "Disabled");
                     
@@ -1819,10 +1826,10 @@ void handleInput() {
             else if(currentMenu == 1) {  // Temperature menu
                 if(subMenu < 4) {  // Temperature values
                     // Save both Celsius and Fahrenheit values
-                    EEPROM.write(TEMP_C_MAX_ADDR, tempValues[0]);
-                    EEPROM.write(TEMP_C_MIN_ADDR, tempValues[1]);
-                    EEPROM.write(TEMP_H_MAX_ADDR, tempValues[2]);
-                    EEPROM.write(TEMP_H_MIN_ADDR, tempValues[3]);
+                    EEPROM.write(TEMP_C_MAX_ADDR, (uint8_t)constrain(tempValues[0], 0, 99));
+                    EEPROM.write(TEMP_C_MIN_ADDR, (uint8_t)constrain(tempValues[1], 0, 99));
+                    EEPROM.write(TEMP_H_MAX_ADDR, (uint8_t)constrain(tempValues[2], 0, 99));
+                    EEPROM.write(TEMP_H_MIN_ADDR, (uint8_t)constrain(tempValues[3], 0, 99));
                     
                     EEPROM.write(TEMP_F_MAX_ADDR, tempValuesF[0]);
                     EEPROM.write(TEMP_F_MIN_ADDR, tempValuesF[1]);
@@ -2083,7 +2090,7 @@ void handleInput() {
                         // Turn off logging if SD card was removed
                         if(isLogging) {
                             isLogging = false;
-                            EEPROM.write(LOG_STATUS_ADDR, 0);
+                            EEPROM.update(LOG_STATUS_ADDR, 0);
                             Serial.println("Data Logging disabled - No SD Card");
                         }
                     }
@@ -2435,15 +2442,16 @@ void saveCO2DelaySettings() {
     Serial.print(co2DelayInterval[2]); Serial.print("m ");
     Serial.print(co2DelayInterval[3]); Serial.println("s");
     
-    // If delay timer is active and we're in Pin mode, update the end time
+    // If delay timer is active and we're in Pin mode, reset the timer with new duration
     if(co2DelayActive && !co2Mode) {
         unsigned long delayTimeMs = (co2DelayInterval[0] * 24L * 60L * 60L * 1000L) +  // Days
                                   (co2DelayInterval[1] * 60L * 60L * 1000L) +          // Hours
                                   (co2DelayInterval[2] * 60L * 1000L) +                // Minutes
                                   (co2DelayInterval[3] * 1000L);                       // Seconds
-        
+
         // Reset the timer
-        co2DelayEndTime = millis() + delayTimeMs;
+        co2DelayStartTime = millis();
+        co2DelayDurationMs = delayTimeMs;
     }
 }
 
@@ -2941,7 +2949,7 @@ void handleWifiCommands() {
       wifiState = WIFI_STATE_SERVER_STARTED;
       wifiBufferIndex = 0;
       wifiBuffer[0] = '\0';
-    } else if (wifiBufferIndex > 150) {
+    } else if (wifiBufferIndex >= WIFI_BUFFER_SIZE - 1) {
       wifiBufferIndex = 0;
       wifiBuffer[0] = '\0';
     }
@@ -2952,9 +2960,9 @@ void handleWifiCommands() {
 // Command dispatcher
 // ---------------------------------------------------------------------------
 void processBluetoothCommand(char* command) {
-  char upper[BT_BUFFER_SIZE];
-  strncpy(upper, command, BT_BUFFER_SIZE - 1);
-  upper[BT_BUFFER_SIZE - 1] = '\0';
+  char upper[WIFI_BUFFER_SIZE];  // 128 bytes — large enough for both BT and WiFi commands
+  strncpy(upper, command, WIFI_BUFFER_SIZE - 1);
+  upper[WIFI_BUFFER_SIZE - 1] = '\0';
   for (uint8_t i = 0; upper[i]; i++) upper[i] = toupper(upper[i]);
 
   if (!handleGetDataCommands(upper, command) &&
@@ -3181,17 +3189,17 @@ bool handleSetSensorCommands(const char* upper, char* command) {
         tempValues[1] = round(fahrenheitToCelsius(cMin));
         tempValues[2] = round(fahrenheitToCelsius(hMax));
         tempValues[3] = round(fahrenheitToCelsius(hMin));
-        EEPROM.write(TEMP_C_MAX_ADDR, tempValues[0]);
-        EEPROM.write(TEMP_C_MIN_ADDR, tempValues[1]);
-        EEPROM.write(TEMP_H_MAX_ADDR, tempValues[2]);
-        EEPROM.write(TEMP_H_MIN_ADDR, tempValues[3]);
+        EEPROM.write(TEMP_C_MAX_ADDR, (uint8_t)constrain(tempValues[0], 0, 99));
+        EEPROM.write(TEMP_C_MIN_ADDR, (uint8_t)constrain(tempValues[1], 0, 99));
+        EEPROM.write(TEMP_H_MAX_ADDR, (uint8_t)constrain(tempValues[2], 0, 99));
+        EEPROM.write(TEMP_H_MIN_ADDR, (uint8_t)constrain(tempValues[3], 0, 99));
       } else {
         tempValues[0] = (int)cMax; tempValues[1] = (int)cMin;
         tempValues[2] = (int)hMax; tempValues[3] = (int)hMin;
-        EEPROM.write(TEMP_C_MAX_ADDR, tempValues[0]);
-        EEPROM.write(TEMP_C_MIN_ADDR, tempValues[1]);
-        EEPROM.write(TEMP_H_MAX_ADDR, tempValues[2]);
-        EEPROM.write(TEMP_H_MIN_ADDR, tempValues[3]);
+        EEPROM.write(TEMP_C_MAX_ADDR, (uint8_t)constrain(tempValues[0], 0, 99));
+        EEPROM.write(TEMP_C_MIN_ADDR, (uint8_t)constrain(tempValues[1], 0, 99));
+        EEPROM.write(TEMP_H_MAX_ADDR, (uint8_t)constrain(tempValues[2], 0, 99));
+        EEPROM.write(TEMP_H_MIN_ADDR, (uint8_t)constrain(tempValues[3], 0, 99));
         tempValuesF[0] = celsiusToFahrenheit(cMax);
         tempValuesF[1] = celsiusToFahrenheit(cMin);
         tempValuesF[2] = celsiusToFahrenheit(hMax);
@@ -3228,7 +3236,7 @@ bool handleSetSensorCommands(const char* upper, char* command) {
     if (strcmp(upper + 12, "ON") == 0) {
       if (sdCardPresent) {
         isLogging = true;
-        EEPROM.write(LOG_STATUS_ADDR, 1);
+        EEPROM.update(LOG_STATUS_ADDR, 1);
         nextLogTime = millis();
         sendResponse("OK:LOGGING=ON");
       } else {
@@ -3236,7 +3244,7 @@ bool handleSetSensorCommands(const char* upper, char* command) {
       }
     } else if (strcmp(upper + 12, "OFF") == 0) {
       isLogging = false;
-      EEPROM.write(LOG_STATUS_ADDR, 0);
+      EEPROM.update(LOG_STATUS_ADDR, 0);
       sendResponse("OK:LOGGING=OFF");
     } else {
       sendError("ERR:INVALID_VALUE");

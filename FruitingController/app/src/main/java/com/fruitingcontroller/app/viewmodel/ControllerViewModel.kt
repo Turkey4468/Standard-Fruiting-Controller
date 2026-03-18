@@ -8,6 +8,8 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import com.fruitingcontroller.app.bluetooth.BluetoothManager
 import com.fruitingcontroller.app.bluetooth.BluetoothManagerSingleton
 import com.fruitingcontroller.app.models.*
@@ -37,8 +39,8 @@ class ControllerViewModel(application: Application) : AndroidViewModel(applicati
     private var keepAliveRunnable: Runnable? = null
 
     // Config loaded flag - only parse config once per connection session
-    private var configLoaded = false
-    private var refreshPending = false  // When true, always parse incoming config data
+    @Volatile private var configLoaded = false
+    @Volatile private var refreshPending = false  // When true, always parse incoming config data
 
     // WiFi connection state tracking
     private var isWifiConnected = false
@@ -80,16 +82,16 @@ class ControllerViewModel(application: Application) : AndroidViewModel(applicati
                     // Start keep-alive pings
                     startKeepAlive()
 
-                    // Send ping and config requests on background thread
-                    Thread {
-                        Thread.sleep(500)
+                    // Send ping and config requests via coroutine
+                    viewModelScope.launch {
+                        delay(500)
                         Log.d("ControllerViewModel", "Sending PING to verify connection...")
                         ping()
 
-                        Thread.sleep(500)
+                        delay(500)
                         Log.d("ControllerViewModel", "Requesting all config...")
-                        requestAllConfig()
-                    }.start()
+                        requestAllConfigAsync()
+                    }
                 } else {
                     Log.d("ControllerViewModel", "Bluetooth disconnected, checking WiFi...")
 

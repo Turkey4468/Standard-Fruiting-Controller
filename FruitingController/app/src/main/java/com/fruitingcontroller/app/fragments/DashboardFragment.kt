@@ -30,6 +30,9 @@ class DashboardFragment : Fragment() {
 
     private lateinit var viewModel: ControllerViewModel
 
+    private lateinit var updateHandler: Handler
+    private lateinit var updateChecker: Runnable
+
     private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
     override fun onCreateView(
@@ -121,8 +124,8 @@ class DashboardFragment : Fragment() {
         observeViewModel()
 
         // Force check connection status every second using STATE only
-        val handler = android.os.Handler(android.os.Looper.getMainLooper())
-        val checker = object : Runnable {
+        updateHandler = Handler(Looper.getMainLooper())
+        updateChecker = object : Runnable {
             private var refreshCounter = 0
 
             override fun run() {
@@ -171,10 +174,10 @@ class DashboardFragment : Fragment() {
                     }
                 }
 
-                handler.postDelayed(this, 1000) // Check every second
+                updateHandler.postDelayed(this, 1000) // Check every second
             }
         }
-        handler.post(checker)
+        updateHandler.post(updateChecker)
     }
 
     private fun observeViewModel() {
@@ -348,6 +351,7 @@ class DashboardFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        updateHandler.removeCallbacks(updateChecker)
         _binding = null
     }
 }

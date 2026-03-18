@@ -257,10 +257,9 @@ class SettingsFragment : Fragment() {
                 binding.summaryHumidity to "$min–$max%"
             }
             DrawerType.CO2 -> {
-                val mode = state.co2Config.mode
-                val min = state.co2Config.fruitMin
-                val max = state.co2Config.fruitMax
-                binding.summaryCo2 to "$mode · $min–$max ppm"
+                val cfg = state.co2Config
+                val (min, max) = if (cfg.mode == "PIN") cfg.pinMin to cfg.pinMax else cfg.fruitMin to cfg.fruitMax
+                binding.summaryCo2 to "${cfg.mode} · $min–$max ppm"
             }
             DrawerType.TEMPERATURE -> {
                 val config = state.temperatureConfig
@@ -298,52 +297,54 @@ class SettingsFragment : Fragment() {
         showLoadingOverlay(drawerType)
 
         val job = viewLifecycleOwner.lifecycleScope.launch {
-            isPopulatingFields = true
+            try {
+                isPopulatingFields = true
 
-            when (drawerType) {
-                DrawerType.HUMIDITY -> viewModel.sendCommand("GET:HUM_ALL")
-                DrawerType.CO2 -> viewModel.sendCommand("GET:CO2_ALL")
-                DrawerType.TEMPERATURE -> viewModel.sendCommand("GET:TEMP_CONFIG")
-                DrawerType.LIGHTS -> { /* send-only, no GET command */ }
-                DrawerType.DATA_LOGGING -> viewModel.sendCommand("GET:LOGGING_CONFIG")
-                DrawerType.CALIBRATION -> viewModel.sendCommand("GET:CAL_ALL")
-                DrawerType.DATE_TIME -> viewModel.sendCommand("GET:DATETIME")
-            }
-
-            val responseDelay = when (drawerType) {
-                DrawerType.CO2 -> 3500L
-                DrawerType.DATA_LOGGING -> 3000L
-                DrawerType.LIGHTS -> 500L
-                else -> 2000L
-            }
-            delay(responseDelay)
-
-            val state = viewModel.controllerState.value
-            if (state != null) {
-                val hasValidData = when (drawerType) {
-                    DrawerType.HUMIDITY -> state.humidityConfig.max > 0 || state.humidityConfig.min > 0
-                    DrawerType.CO2 -> state.co2Config.fruitMax > 0 || state.co2Config.fruitMin > 0
-                    DrawerType.LIGHTS -> true
-                    DrawerType.CALIBRATION -> true
-                    else -> true
+                when (drawerType) {
+                    DrawerType.HUMIDITY -> viewModel.sendCommand("GET:HUM_ALL")
+                    DrawerType.CO2 -> viewModel.sendCommand("GET:CO2_ALL")
+                    DrawerType.TEMPERATURE -> viewModel.sendCommand("GET:TEMP_CONFIG")
+                    DrawerType.LIGHTS -> { /* send-only, no GET command */ }
+                    DrawerType.DATA_LOGGING -> viewModel.sendCommand("GET:LOGGING_CONFIG")
+                    DrawerType.CALIBRATION -> viewModel.sendCommand("GET:CAL_ALL")
+                    DrawerType.DATE_TIME -> viewModel.sendCommand("GET:DATETIME")
                 }
 
-                if (hasValidData) {
-                    populateDrawerFields(drawerType, state)
-                    Log.d("SettingsFragment", "Populated fields for $drawerType")
+                val responseDelay = when (drawerType) {
+                    DrawerType.CO2 -> 3500L
+                    DrawerType.DATA_LOGGING -> 3000L
+                    DrawerType.LIGHTS -> 500L
+                    else -> 2000L
+                }
+                delay(responseDelay)
+
+                val state = viewModel.controllerState.value
+                if (state != null) {
+                    val hasValidData = when (drawerType) {
+                        DrawerType.HUMIDITY -> state.humidityConfig.max > 0 || state.humidityConfig.min > 0
+                        DrawerType.CO2 -> state.co2Config.fruitMax > 0 || state.co2Config.fruitMin > 0
+                        DrawerType.LIGHTS -> true
+                        DrawerType.CALIBRATION -> true
+                        else -> true
+                    }
+
+                    if (hasValidData) {
+                        populateDrawerFields(drawerType, state)
+                        Log.d("SettingsFragment", "Populated fields for $drawerType")
+                    } else {
+                        Log.w("SettingsFragment", "No valid data received for $drawerType - try Refresh")
+                        Toast.makeText(requireContext(), "Data not received - tap Refresh", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
-                    Log.w("SettingsFragment", "No valid data received for $drawerType - try Refresh")
-                    Toast.makeText(requireContext(), "Data not received - tap Refresh", Toast.LENGTH_SHORT).show()
+                    Log.w("SettingsFragment", "State is null, cannot populate $drawerType")
                 }
-            } else {
-                Log.w("SettingsFragment", "State is null, cannot populate $drawerType")
+
+                drawerDataLoaded[drawerType] = true
+                Log.d("SettingsFragment", "Finished loading data for drawer: $drawerType")
+            } finally {
+                hideLoadingOverlay(drawerType)
+                isPopulatingFields = false
             }
-
-            drawerDataLoaded[drawerType] = true
-            hideLoadingOverlay(drawerType)
-            isPopulatingFields = false
-
-            Log.d("SettingsFragment", "Finished loading data for drawer: $drawerType")
         }
 
         loadingJobs[drawerType] = job

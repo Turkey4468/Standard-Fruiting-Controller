@@ -6,8 +6,7 @@ object StateManagerSingleton {
     val controllerState = MutableLiveData<ControllerState>(ControllerState())
 
     fun updateState(update: (ControllerState) -> ControllerState) {
-        val currentState = controllerState.value ?: ControllerState()
-        val newState = update(currentState)
-        controllerState.postValue(newState)
+        val current = controllerState.value ?: ControllerState()
+        controllerState.value = update(current)
     }
 }
