@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/surface_page">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_lg">
+
+        <!-- Connection Status Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_lg"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardCornerRadius="@dimen/card_corner_radius">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/spacing_lg"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/imgConnectionStatus"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/presence_offline" />
+
+                <TextView
+                    android:id="@+id/tvConnectionStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_md"
+                    android:text="Not Connected"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvLastUpdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Fruiting Sensor Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_lg"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardCornerRadius="@dimen/card_corner_radius">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/spacing_md">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Fruiting Sensor"
+                        style="@style/TextAppearance.FC.CardTitle" />
+
+                    <TextView
+                        android:id="@+id/tvSensor1Status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ENABLED"
+                        style="@style/TextAppearance.FC.StatusChip"
+                        android:textColor="@color/state_ok" />
+
+                </LinearLayout>
+
+                <include layout="@layout/sensor_readings_layout"
+                    android:id="@+id/sensor1Readings" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Relay Status Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_lg"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardCornerRadius="@dimen/card_corner_radius">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Relay Status"
+                    style="@style/TextAppearance.FC.CardTitle"
+                    android:layout_marginBottom="@dimen/spacing_md" />
+
+                <!-- Humidity Relay -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/spacing_sm">
+
+                    <View
+                        android:id="@+id/indicatorHumidity"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/circle_indicator"
+                        android:layout_marginEnd="@dimen/spacing_sm" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Humidity"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvRelayHumidity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/state_inactive" />
+
+                </LinearLayout>
+
+                <!-- Heat Relay -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/spacing_sm">
+
+                    <View
+                        android:id="@+id/indicatorHeat"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/circle_indicator"
+                        android:layout_marginEnd="@dimen/spacing_sm" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Heat"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvRelayHeat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/state_inactive" />
+
+                </LinearLayout>
+
+                <!-- CO2 Relay -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/spacing_sm">
+
+                    <View
+                        android:id="@+id/indicatorCO2"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/circle_indicator"
+                        android:layout_marginEnd="@dimen/spacing_sm" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="CO&#x2082;"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvRelayCO2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/state_inactive" />
+
+                </LinearLayout>
+
+                <!-- Lights Relay -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <View
+                        android:id="@+id/indicatorLights"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/circle_indicator"
+                        android:layout_marginEnd="@dimen/spacing_sm" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Lights"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvRelayLights"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/state_inactive" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fruiting Controller</string>
+    <string name="connection_status">Connection Status</string>
+    <string name="sensor_1">Sensor 1</string>
+    <string name="sensor_2">Sensor 2</string>
+    <string name="ambient_sensor">Ambient Sensor</string>
+    <string name="co2_ppm">CO₂: %1$d ppm</string>
+    <string name="temperature">Temp: %1$.1f°%2$s</string>
+    <string name="humidity">Humidity: %1$.1f%%</string>
+    <string name="relay_status">Relay Status</string>
+    <string name="humidity_control">Humidity Control</string>
+    <string name="co2_control">CO₂ Control</string>
+    <string name="light_timer">Light Timer</string>
+    <string name="system_controls">System Controls</string>
+    <string name="enabled">ENABLED</string>
+    <string name="disabled">DISABLED</string>
+    <string name="on">ON</string>
+    <string name="off">OFF</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="connecting">Connecting…</string>
+    <string name="target_range_co2">Min: %1$s  Max: %2$s ppm</string>
+    <string name="target_range_humidity">Min: %1$s%%  Max: %2$s%%</string>
+    <string name="duration_hint">e.g. 0d 02:30:00</string>
+    <string name="toolbar_bt_connected">BT Connected</string>
+    <string name="toolbar_wifi_connected">WiFi Connected</string>
+    <string name="toolbar_not_connected">Not Connected</string>
+</resources>

@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/surface_page">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_lg">
+
+        <!-- HUMIDITY DRAWER -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xs"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardCornerRadius="@dimen/card_corner_radius">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <LinearLayout android:id="@+id/headerHumidity" android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="16dp" android:background="?attr/selectableItemBackground">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="&#x1F4A7; Humidity Control" android:textSize="16sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" />
+                        <TextView android:id="@+id/summaryHumidity" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/text_secondary" android:visibility="gone" />
+                    </LinearLayout>
+                    <ImageView android:id="@+id/arrowHumidity" android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/arrow_down_float" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/contentHumidity" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:visibility="gone">
+                    <ProgressBar android:id="@+id/loadingHumidity"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        android:layout_marginBottom="8dp" />
+                    <Button android:id="@+id/btnRefreshHumidity" android:layout_width="wrap_content" android:layout_height="36dp" android:layout_gravity="end" android:layout_marginBottom="8dp" android:text="&#x21BB; Refresh" android:textSize="12sp" style="@style/Widget.Material3.Button.TextButton" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" android:hint="Max (%)">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etHumMax" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="number" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="Min (%)">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etHumMin" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="number" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                    <Button android:id="@+id/btnSaveHum" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Save Humidity" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CO2 DRAWER -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xs"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardCornerRadius="@dimen/card_corner_radius">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <LinearLayout android:id="@+id/headerCo2" android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="16dp" android:background="?attr/selectableItemBackground">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="&#x1F32C;&#xFE0F; CO&#x2082; Control" android:textSize="16sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" />
+                        <TextView android:id="@+id/summaryCo2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/text_secondary" android:visibility="gone" />
+                    </LinearLayout>
+                    <ImageView android:id="@+id/arrowCo2" android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/arrow_down_float" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/contentCo2" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:visibility="gone">
+                    <ProgressBar android:id="@+id/loadingCo2"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        android:layout_marginBottom="8dp" />
+                    <Button android:id="@+id/btnRefreshCo2" android:layout_width="wrap_content" android:layout_height="36dp" android:layout_gravity="end" android:layout_marginBottom="8dp" android:text="&#x21BB; Refresh" android:textSize="12sp" style="@style/Widget.Material3.Button.TextButton" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mode" android:textSize="14sp" android:layout_marginBottom="8dp" />
+                    <Spinner android:id="@+id/spinnerCO2Mode" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fruiting Mode" android:textSize="14sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="12dp">
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" android:hint="Fruit Max">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCO2FruitMax" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="number" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="Fruit Min">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCO2FruitMin" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="number" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pinning Mode" android:textSize="14sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="12dp">
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" android:hint="Pin Max">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCO2PinMax" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="number" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="Pin Min">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCO2PinMin" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="number" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pin&#x2192;Fruit Delay" android:textSize="14sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:hint="Delay"
+                        app:helperText="@string/duration_hint"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCO2Delay"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="FAT Interval" android:textSize="12sp" android:layout_marginBottom="4dp" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:hint="FAT Interval"
+                        app:helperText="@string/duration_hint"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCO2FATInterval"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="FAT Duration" android:textSize="12sp" android:layout_marginBottom="4dp" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:hint="FAT Duration"
+                        app:helperText="@string/duration_hint"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCO2FATDuration"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="12dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Enable FAT" android:textSize="14sp" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchCO2FAT" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                    <Button android:id="@+id/btnSaveCO2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Save CO&#x2082;" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- TEMPERATURE DRAWER -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xs"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardCornerRadius="@dimen/card_corner_radius">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <LinearLayout android:id="@+id/headerTemperature" android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="16dp" android:background="?attr/selectableItemBackground">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="&#x1F321;&#xFE0F; Temperature" android:textSize="16sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" />
+                        <TextView android:id="@+id/summaryTemperature" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/text_secondary" android:visibility="gone" />
+                    </LinearLayout>
+                    <ImageView android:id="@+id/arrowTemperature" android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/arrow_down_float" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/contentTemperature" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:visibility="gone">
+                    <ProgressBar android:id="@+id/loadingTemperature"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        android:layout_marginBottom="8dp" />
+                    <Button android:id="@+id/btnRefreshTemperature" android:layout_width="wrap_content" android:layout_height="36dp" android:layout_gravity="end" android:layout_marginBottom="8dp" android:text="&#x21BB; Refresh" android:textSize="12sp" style="@style/Widget.Material3.Button.TextButton" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cooling" android:textSize="14sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="12dp">
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" android:hint="Cool Max">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCoolMax" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="numberDecimal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="Cool Min">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCoolMin" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="numberDecimal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Heating" android:textSize="14sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="12dp">
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" android:hint="Heat Max">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etHeatMax" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="numberDecimal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="Heat Min">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etHeatMin" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="numberDecimal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mode" android:textSize="14sp" android:layout_marginBottom="8dp" />
+                    <Spinner android:id="@+id/spinnerTempMode" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Unit" android:textSize="14sp" android:layout_marginBottom="8dp" />
+                    <RadioGroup android:id="@+id/radioGroupTempUnit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="12dp">
+                        <RadioButton android:id="@+id/radioCelsius" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Celsius" android:checked="true" />
+                        <RadioButton android:id="@+id/radioFahrenheit" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fahrenheit" android:layout_marginStart="16dp" />
+                    </RadioGroup>
+                    <Button android:id="@+id/btnSaveTempConfig" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Save Temperature" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- LIGHTS TIMER DRAWER -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xs"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardCornerRadius="@dimen/card_corner_radius">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <LinearLayout android:id="@+id/headerLights" android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="16dp" android:background="?attr/selectableItemBackground">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="&#x1F4A1; Lights Timer" android:textSize="16sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" />
+                        <TextView android:id="@+id/summaryLights" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/text_secondary" android:visibility="gone" />
+                    </LinearLayout>
+                    <ImageView android:id="@+id/arrowLights" android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/arrow_down_float" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/contentLights" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:visibility="gone">
+                    <ProgressBar android:id="@+id/loadingLights"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        android:layout_marginBottom="8dp" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:hint="On Time (mins from midnight)">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etLightsOn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:hint="Off Time (mins from midnight)">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etLightsOff"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <Button android:id="@+id/btnSaveLights" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Save Lights" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- DATA LOGGING DRAWER -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xs"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardCornerRadius="@dimen/card_corner_radius">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <LinearLayout android:id="@+id/headerDataLogging" android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="16dp" android:background="?attr/selectableItemBackground">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="&#x1F4CA; Data Logging" android:textSize="16sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" />
+                        <TextView android:id="@+id/summaryDataLogging" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/text_secondary" android:visibility="gone" />
+                    </LinearLayout>
+                    <ImageView android:id="@+id/arrowDataLogging" android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/arrow_down_float" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/contentDataLogging" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:visibility="gone">
+                    <ProgressBar android:id="@+id/loadingDataLogging"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        android:layout_marginBottom="8dp" />
+                    <Button android:id="@+id/btnRefreshDataLogging" android:layout_width="wrap_content" android:layout_height="36dp" android:layout_gravity="end" android:layout_marginBottom="8dp" android:text="&#x21BB; Refresh" android:textSize="12sp" style="@style/Widget.Material3.Button.TextButton" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:hint="Log Interval"
+                        app:helperText="@string/duration_hint"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etLogInterval"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="12dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Enable Logging" android:textSize="14sp" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/switchLogging" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                    <Button android:id="@+id/btnSaveLogInterval" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Save Interval" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CALIBRATION DRAWER -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xs"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardCornerRadius="@dimen/card_corner_radius">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <LinearLayout android:id="@+id/headerCalibration" android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="16dp" android:background="?attr/selectableItemBackground">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="&#x1F527; Calibration" android:textSize="16sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" />
+                        <TextView android:id="@+id/summaryCalibration" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/text_secondary" android:visibility="gone" />
+                    </LinearLayout>
+                    <ImageView android:id="@+id/arrowCalibration" android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/arrow_down_float" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/contentCalibration" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:visibility="gone">
+                    <ProgressBar android:id="@+id/loadingCalibration"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        android:layout_marginBottom="8dp" />
+                    <Button android:id="@+id/btnRefreshCalibration" android:layout_width="wrap_content" android:layout_height="36dp" android:layout_gravity="end" android:layout_marginBottom="8dp" android:text="&#x21BB; Refresh" android:textSize="12sp" style="@style/Widget.Material3.Button.TextButton" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fruiting Sensor" android:textSize="14sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" android:hint="Temp Offset">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCalTemp" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="numberDecimal|numberSigned" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" android:hint="Hum Offset">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCalHum" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="numberDecimal|numberSigned" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="CO2 Offset">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etCalCO2" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="numberDecimal|numberSigned" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                    <Button android:id="@+id/btnCalibrate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Save Calibration" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- DATE TIME DRAWER -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_xs"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardCornerRadius="@dimen/card_corner_radius">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <LinearLayout android:id="@+id/headerDateTime" android:layout_width="match_parent" android:layout_height="56dp" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="16dp" android:background="?attr/selectableItemBackground">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="&#x1F550; Date &amp; Time" android:textSize="16sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" />
+                        <TextView android:id="@+id/summaryDateTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/text_secondary" android:visibility="gone" />
+                    </LinearLayout>
+                    <ImageView android:id="@+id/arrowDateTime" android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/arrow_down_float" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/contentDateTime" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp" android:visibility="gone">
+                    <ProgressBar android:id="@+id/loadingDateTime"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        android:layout_marginBottom="8dp" />
+                    <Button android:id="@+id/btnRefreshDateTime" android:layout_width="wrap_content" android:layout_height="36dp" android:layout_gravity="end" android:layout_marginBottom="8dp" android:text="&#x21BB; Refresh" android:textSize="12sp" style="@style/Widget.Material3.Button.TextButton" />
+                    <TextView android:id="@+id/tvCurrentDateTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Current: --" android:textSize="14sp" android:layout_marginBottom="12dp" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="12dp">
+                        <Button android:id="@+id/btnSetDate" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" android:text="Set Date" />
+                        <Button android:id="@+id/btnSetTime" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Set Time" />
+                    </LinearLayout>
+                    <Button android:id="@+id/btnSyncDateTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sync to Phone Time" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
